@@ -49,46 +49,58 @@ resource "aws_internet_gateway" "taa" {
   }
 }
 
-resource "aws_route_table" "taa" {
+#resource "aws_eip" "taa_eip" {
+#  vpc  = true
+#  tags = {
+#    Name     = "taa-nat-eip"
+#    Resource = "taa"
+#  }
+#}
+
+#resource "aws_nat_gateway" "taa_ngw" {
+#  allocation_id = aws_eip.taa_eip.id
+#  subnet_id     = aws_subnet.taa_sub_pub.id
+#  tags = {
+#    Name     = "taa-ngw"
+#    Resource = "taa"
+#  }
+#}
+
+resource "aws_route_table" "taa_main" {
   vpc_id = aws_vpc.taa.id
   route {
     cidr_block = "0.0.0.0/0"
     gateway_id = aws_internet_gateway.taa.id
   }
   tags = {
-    Name     = "taa-routing-table"
+    Name     = "taa-routing-table-main"
+    Resource = "taa"
+  }
+}
+
+resource "aws_route_table" "taa_sub" {
+  vpc_id = aws_vpc.taa.id
+  route {
+    cidr_block = "0.0.0.0/0"
+    gateway_id = aws_internet_gateway.taa.id
+  }
+  tags = {
+    Name     = "taa-routing-table-sub"
     Resource = "taa"
   }
 }
 
 resource "aws_route_table_association" "taa_pub" {
   subnet_id      = aws_subnet.taa_sub_pub.id
-  route_table_id = aws_route_table.taa.id
+  route_table_id = aws_route_table.taa_main.id
 }
 
 resource "aws_route_table_association" "taa_priv1" {
   subnet_id      = aws_subnet.taa_sub_priv1.id
-  route_table_id = aws_route_table.taa.id
+  route_table_id = aws_route_table.taa_sub.id
 }
 
 resource "aws_route_table_association" "taa_priv2" {
   subnet_id      = aws_subnet.taa_sub_priv2.id
-  route_table_id = aws_route_table.taa.id
-}
-
-resource "aws_eip" "taa_eip" {
-  vpc  = true
-  tags = {
-    Name     = "taa-nat-eip"
-    Resource = "taa"
-  }
-}
-
-resource "aws_nat_gateway" "taa_ngw" {
-  allocation_id = aws_eip.taa_eip.id
-  subnet_id     = aws_subnet.taa_sub_pub.id
-  tags = {
-    Name     = "taa-ngw"
-    Resource = "taa"
-  }
+  route_table_id = aws_route_table.taa_sub.id
 }
