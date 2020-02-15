@@ -1,3 +1,4 @@
+# --------------- VPC ---------------
 resource "aws_vpc" "taa" {
   cidr_block           = "10.40.0.0/16"
   enable_dns_support   = true
@@ -8,6 +9,7 @@ resource "aws_vpc" "taa" {
   }
 }
 
+# --------------- SubNet ---------------
 resource "aws_subnet" "taa_sub_pub" {
   vpc_id = aws_vpc.taa.id
   availability_zone = "ap-northeast-1a"
@@ -41,6 +43,7 @@ resource "aws_subnet" "taa_sub_priv2" {
   }
 }
 
+# --------------- Gateway ---------------
 resource "aws_internet_gateway" "taa" {
   vpc_id = aws_vpc.taa.id
   tags = {
@@ -49,16 +52,16 @@ resource "aws_internet_gateway" "taa" {
   }
 }
 
-#resource "aws_eip" "taa_eip" {
+#resource "aws_eip" "taa_ngw_eip" {
 #  vpc  = true
 #  tags = {
-#    Name     = "taa-nat-eip"
+#    Name     = "taa-ngw-eip"
 #    Resource = "taa"
 #  }
 #}
 
 #resource "aws_nat_gateway" "taa_ngw" {
-#  allocation_id = aws_eip.taa_eip.id
+#  allocation_id = aws_eip.taa_ngw_eip.id
 #  subnet_id     = aws_subnet.taa_sub_pub.id
 #  tags = {
 #    Name     = "taa-ngw"
@@ -66,6 +69,7 @@ resource "aws_internet_gateway" "taa" {
 #  }
 #}
 
+# --------------- Routing Table ---------------
 resource "aws_route_table" "taa_main" {
   vpc_id = aws_vpc.taa.id
   route {
