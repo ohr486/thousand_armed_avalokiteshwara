@@ -1,6 +1,6 @@
 # --------------- VPC ---------------
 resource "aws_vpc" "taa" {
-  cidr_block           = "10.40.0.0/16"
+  cidr_block           = var.cidr_block
   enable_dns_support   = true
   enable_dns_hostnames = true
   tags = {
@@ -10,21 +10,21 @@ resource "aws_vpc" "taa" {
 }
 
 # --------------- SubNet ---------------
-resource "aws_subnet" "taa_sub_pub" {
+resource "aws_subnet" "taa_sub_pub1" {
   vpc_id = aws_vpc.taa.id
-  availability_zone = "ap-northeast-1a"
-  cidr_block = "10.40.0.0/20"
+  availability_zone = var.az["az1"]
+  cidr_block = var.subnet_cidr_block["pub1"]
   map_public_ip_on_launch = true
   tags = {
-    Name     = "taa-subnet-pub"
+    Name     = "taa-subnet-pub-1"
     Resource = "taa"
   }
 }
 
 resource "aws_subnet" "taa_sub_priv1" {
   vpc_id = aws_vpc.taa.id
-  availability_zone = "ap-northeast-1a"
-  cidr_block = "10.40.16.0/20"
+  availability_zone = var.az["az1"]
+  cidr_block = var.subnet_cidr_block["pri1"]
   map_public_ip_on_launch = true
   tags = {
     Name     = "taa-subnet-priv-1"
@@ -34,8 +34,8 @@ resource "aws_subnet" "taa_sub_priv1" {
 
 resource "aws_subnet" "taa_sub_priv2" {
   vpc_id = aws_vpc.taa.id
-  availability_zone = "ap-northeast-1a"
-  cidr_block = "10.40.32.0/20"
+  availability_zone = var.az["az2"]
+  cidr_block = var.subnet_cidr_block["pri2"]
   map_public_ip_on_launch = true
   tags = {
     Name     = "taa-subnet-priv-2"
@@ -62,7 +62,7 @@ resource "aws_internet_gateway" "taa" {
 
 #resource "aws_nat_gateway" "taa_ngw" {
 #  allocation_id = aws_eip.taa_ngw_eip.id
-#  subnet_id     = aws_subnet.taa_sub_pub.id
+#  subnet_id     = aws_subnet.taa_sub_pub1.id
 #  tags = {
 #    Name     = "taa-ngw"
 #    Resource = "taa"
@@ -94,8 +94,8 @@ resource "aws_route_table" "taa_sub" {
   }
 }
 
-resource "aws_route_table_association" "taa_pub" {
-  subnet_id      = aws_subnet.taa_sub_pub.id
+resource "aws_route_table_association" "taa_pub1" {
+  subnet_id      = aws_subnet.taa_sub_pub1.id
   route_table_id = aws_route_table.taa_main.id
 }
 
