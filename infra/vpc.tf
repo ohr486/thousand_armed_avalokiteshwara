@@ -21,6 +21,16 @@ resource "aws_subnet" "taa_sub_pub1" {
   }
 }
 
+resource "aws_subnet" "taa_sub_pub2" {
+  vpc_id = aws_vpc.taa.id
+  availability_zone = var.az["az2"]
+  cidr_block = var.subnet_cidr_block["pub2"]
+  map_public_ip_on_launch = true
+  tags = {
+    Name     = "taa-subnet-pub-2"
+    Resource = "taa"
+  }
+
 resource "aws_subnet" "taa_sub_priv1" {
   vpc_id = aws_vpc.taa.id
   availability_zone = var.az["az1"]
