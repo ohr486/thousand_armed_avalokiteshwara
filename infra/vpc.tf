@@ -30,6 +30,7 @@ resource "aws_subnet" "taa_sub_pub2" {
     Name     = "taa-subnet-pub-2"
     Resource = "taa"
   }
+}
 
 resource "aws_subnet" "taa_sub_priv1" {
   vpc_id = aws_vpc.taa.id
