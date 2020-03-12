@@ -55,7 +55,7 @@ resource "aws_subnet" "taa_sub_priv2" {
 }
 
 # --------------- Gateway ---------------
-resource "aws_internet_gateway" "taa" {
+resource "aws_internet_gateway" "taa_igw" {
   vpc_id = aws_vpc.taa.id
   tags = {
     Name     = "taa-igw"
@@ -63,29 +63,29 @@ resource "aws_internet_gateway" "taa" {
   }
 }
 
-#resource "aws_eip" "taa_ngw_eip" {
-#  vpc  = true
-#  tags = {
-#    Name     = "taa-ngw-eip"
-#    Resource = "taa"
-#  }
-#}
+resource "aws_eip" "taa_ngw_eip" {
+  vpc  = true
+  tags = {
+    Name     = "taa-ngw-eip"
+    Resource = "taa"
+  }
+}
 
-#resource "aws_nat_gateway" "taa_ngw" {
-#  allocation_id = aws_eip.taa_ngw_eip.id
-#  subnet_id     = aws_subnet.taa_sub_pub1.id
-#  tags = {
-#    Name     = "taa-ngw"
-#    Resource = "taa"
-#  }
-#}
+resource "aws_nat_gateway" "taa_ngw" {
+  allocation_id = aws_eip.taa_ngw_eip.id
+  subnet_id     = aws_subnet.taa_sub_pub1.id
+  tags = {
+    Name     = "taa-ngw"
+    Resource = "taa"
+  }
+}
 
 # --------------- Routing Table ---------------
 resource "aws_route_table" "taa_main" {
   vpc_id = aws_vpc.taa.id
   route {
     cidr_block = "0.0.0.0/0"
-    gateway_id = aws_internet_gateway.taa.id
+    gateway_id = aws_internet_gateway.taa_igw.id
   }
   tags = {
     Name     = "taa-routing-table-main"
@@ -97,7 +97,7 @@ resource "aws_route_table" "taa_sub" {
   vpc_id = aws_vpc.taa.id
   route {
     cidr_block = "0.0.0.0/0"
-    gateway_id = aws_internet_gateway.taa.id
+    gateway_id = aws_nat_gateway.taa_ngw.id
   }
   tags = {
     Name     = "taa-routing-table-sub"
