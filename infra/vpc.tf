@@ -109,12 +109,15 @@ resource "aws_route_table_association" "taa_pub1" {
   subnet_id      = aws_subnet.taa_sub_pub1.id
   route_table_id = aws_route_table.taa_main.id
 }
+resource "aws_route_table_association" "taa_pub2" {
+  subnet_id      = aws_subnet.taa_sub_pub2.id
+  route_table_id = aws_route_table.taa_main.id
+}
 
 resource "aws_route_table_association" "taa_priv1" {
   subnet_id      = aws_subnet.taa_sub_priv1.id
   route_table_id = aws_route_table.taa_sub.id
 }
-
 resource "aws_route_table_association" "taa_priv2" {
   subnet_id      = aws_subnet.taa_sub_priv2.id
   route_table_id = aws_route_table.taa_sub.id
